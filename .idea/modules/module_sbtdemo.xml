@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_sbtdemo" default="compile.module.sbtdemo">
+  <dirname property="module.sbtdemo.basedir" file="${ant.file.module_sbtdemo}"/>
+  
+  <property name="module.jdk.home.sbtdemo" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.sbtdemo" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.sbtdemo" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.sbtdemo" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="sbtdemo.output.dir" value="${module.sbtdemo.basedir}/../../target/scala-2.11/classes"/>
+  <property name="sbtdemo.testoutput.dir" value="${module.sbtdemo.basedir}/../../target/scala-2.11/test-classes"/>
+  
+  <path id="sbtdemo.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="sbtdemo.module.production.classpath">
+    <path refid="${module.jdk.classpath.sbtdemo}"/>
+    <path refid="library.sbt:_org.scala-lang:scala-library:2.11.8:jar.classpath"/>
+  </path>
+  
+  <path id="sbtdemo.runtime.production.module.classpath">
+    <pathelement location="${sbtdemo.output.dir}"/>
+    <path refid="library.sbt:_org.scala-lang:scala-library:2.11.8:jar.classpath"/>
+  </path>
+  
+  <path id="sbtdemo.module.classpath">
+    <path refid="${module.jdk.classpath.sbtdemo}"/>
+    <pathelement location="${sbtdemo.output.dir}"/>
+    <path refid="library.sbt:_org.scala-lang:scala-library:2.11.8:jar.classpath"/>
+  </path>
+  
+  <path id="sbtdemo.runtime.module.classpath">
+    <pathelement location="${sbtdemo.testoutput.dir}"/>
+    <pathelement location="${sbtdemo.output.dir}"/>
+    <path refid="library.sbt:_org.scala-lang:scala-library:2.11.8:jar.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.sbtdemo">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.sbtdemo">
+    <patternset refid="excluded.from.module.sbtdemo"/>
+  </patternset>
+  
+  <path id="sbtdemo.module.sourcepath">
+    <dirset dir="${module.sbtdemo.basedir}/../../../SBTDemo">
+      <include name="src/main/java"/>
+      <include name="src/main/scala"/>
+      <include name="src/main/scala-2.11"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="sbtdemo.module.test.sourcepath">
+    <dirset dir="${module.sbtdemo.basedir}/../../../SBTDemo">
+      <include name="src/test/java"/>
+      <include name="src/test/scala"/>
+      <include name="src/test/scala-2.11"/>
+      <include name="src/test/resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.sbtdemo" depends="compile.module.sbtdemo.production,compile.module.sbtdemo.tests" description="Compile module sbtdemo"/>
+  
+  <target name="compile.module.sbtdemo.production" depends="register.custom.compilers" description="Compile module sbtdemo; production classes">
+    <mkdir dir="${sbtdemo.output.dir}"/>
+    <javac2 destdir="${sbtdemo.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.sbtdemo}/javac">
+      <compilerarg line="${compiler.args.sbtdemo}"/>
+      <bootclasspath refid="sbtdemo.module.bootclasspath"/>
+      <classpath refid="sbtdemo.module.production.classpath"/>
+      <src refid="sbtdemo.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.sbtdemo"/>
+    </javac2>
+    
+    <copy todir="${sbtdemo.output.dir}">
+      <fileset dir="${module.sbtdemo.basedir}/../../src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.sbtdemo.basedir}/../../src/main/scala">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.sbtdemo.basedir}/../../src/main/scala-2.11">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.sbtdemo.basedir}/../../src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.sbtdemo.tests" depends="register.custom.compilers,compile.module.sbtdemo.production" description="compile module sbtdemo; test classes" unless="skip.tests">
+    <mkdir dir="${sbtdemo.testoutput.dir}"/>
+    <javac2 destdir="${sbtdemo.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.sbtdemo}/javac">
+      <compilerarg line="${compiler.args.sbtdemo}"/>
+      <bootclasspath refid="sbtdemo.module.bootclasspath"/>
+      <classpath refid="sbtdemo.module.classpath"/>
+      <src refid="sbtdemo.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.sbtdemo"/>
+    </javac2>
+    
+    <copy todir="${sbtdemo.testoutput.dir}">
+      <fileset dir="${module.sbtdemo.basedir}/../../src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.sbtdemo.basedir}/../../src/test/scala">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.sbtdemo.basedir}/../../src/test/scala-2.11">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.sbtdemo.basedir}/../../src/test/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.sbtdemo" description="cleanup module">
+    <delete dir="${sbtdemo.output.dir}"/>
+    <delete dir="${sbtdemo.testoutput.dir}"/>
+  </target>
+</project>
